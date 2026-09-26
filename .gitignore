@@ -1,0 +1,50 @@
+# build output
+dist/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# editor swap and temp files
+*.swp
+*~
+
+
+# Local video provenance notes (also covered by dist/)
+/dist/videos/README.md
+
+# Local-only video metadata and selection provenance
+/.local/video-metadata/
+/src/data/planning-selection.json
+
+# Local documentation, editor settings, and unused template assets
+/documentation.md
+/.vscode/
+/.github/copilot-instructions.md
+/AGENTS.md
+/src/assets/dogs-msillm.jpg
+/src/assets/dogs-diffc.png
+/src/assets/dogs-true.png
+/src/assets/outside.mp4
+/public/BoxVertexColors.glb
+/public/screenshot-dark.png
+/public/screenshot-light.png
+/.local/

@@ -1,0 +1,110 @@
+---
+title: "PhysiCalWorld: In-Context Physics Calibration for World Models"
+theme: device
+favicon: favicon.svg
+description: "Existing world models typically perceive a scene through current visual frame or a narrow history window."
+thumbnail: teaser.png
+---
+
+import PlanningVideos from "./components/PlanningVideos.astro";
+import OpenLoopVideos from "./components/OpenLoopVideos.astro";
+import Header from "./components/Header.astro";
+import HighlightedSection from "./components/HighlightedSection.astro";
+import Figure from "./components/Figure.astro";
+import Picture from "./components/Picture.astro";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/starwind/tabs";
+
+import teaser from "./assets/images/teaser.png";
+import method from "./assets/images/method.png";
+import envDemo from "./assets/images/env-demo.png";
+
+<Header
+  title="PhysiCalWorld: In-Context Physics Calibration for World Models"
+  conference="Under Review"
+  authors={[
+    {
+      name: "Anonymous Authors",
+    },
+  ]}
+/>
+
+  <Figure>
+    <div slot="figure" class="w-full max-w-xl">
+      <Picture
+        src={teaser}
+        alt="In-Context Physics Calibration for World Models"
+        priority
+      />
+    </div>
+    <Fragment slot="caption">
+      <strong>In-Context Physics Calibration for World Models.</strong> In a test environment with unknown transition dynamics, an embodied agent first executes exploratory actions to collect an in-context interaction sequence. This sequence is then provided as prompt to calibrate the world model such that future predictions adhere to the actual dynamics of the test environment.
+    </Fragment>
+  </Figure>
+
+<HighlightedSection>
+
+## Abstract
+
+Existing world models typically perceive a scene through current visual frame or a narrow history window. However, these observations may not reveal the physics properties that govern transition dynamics, such as an object's mass distribution, joint damping, or surface friction. Without calibrating these physics factors for world models, predictions tend to regress toward an empirical prior and induce severe drift in novel test scenes. To this end, we propose PhysiCalWorld, which calibrates action-conditioned world models to the instance-specific dynamics via in-context prompting, without fine-tuning or analytical physics modeling. Our method encodes an exploratory interaction clip collected within the test scene into a compact physics descriptor token, which grounds subsequent predictions in the scene's actual physical behavior. PhysiCalWorld is trained end-to-end with the latent prediction loss alone, without physics labels. At inference time, the descriptor token is extracted once and can be reused across rollouts with negligible compute overhead. We evaluate PhysiCalWorld across four environments covering diverse physics variations and show that it substantially improves rollout prediction accuracy and visual planning success rate. The learned descriptors also form a physically structured latent space and generalize beyond the physics ranges seen during training.
+
+</HighlightedSection>
+
+## Method Overview
+
+  <Figure>
+    <Picture
+      slot="figure"
+      src={method}
+      alt="PhysiCalWorld Method Overview"
+    />
+    <Fragment slot="caption">
+      <strong>Method Overview.</strong> PhysiCalWorld calibrates action-conditioned world models to the actual dynamics of a test scene via prompting with in-context interaction. In <strong>(a)</strong>, current visual observation alone cannot identify the physical dynamics of the test scene $\mathcal{T}$, forcing the world model to guess among multiple potential future states. In <strong>(b)</strong>, starting from the top left, exploratory actions $a_{1:T_c}^c$ are first executed in the test scene $\mathcal{T}$, yielding observations ${o}_{1:T_c}^c$. The context encoder $g_\phi$ then extracts physics information from this obs-action sequence and compresses it into a physics descriptor token $\mathbf{z}_{\text{phy}}$. Conditioned on $\mathbf{z}_{\text{phy}}$, the world model is able to generate future prediction $\hat{o}_{t+1}$ consistent with the test scene's dynamics.
+    </Fragment>
+  </Figure>
+
+
+## Benchmark Environments
+
+  <Figure>
+    <Picture
+      slot="figure"
+      src={envDemo}
+      alt="Four simulation environments with physical variations"
+    />
+    <Fragment slot="caption">
+      <strong>Environment Demonstrations.</strong> We evaluate our method on four simulation environments featuring diverse variations of physics properties. For each environment, we show four images: the top-left image is a random initial observation, while the remaining three images demonstrate how executing the <em>same</em> action sequence yields different future states due to different physics parameters of the scenes. Specifically, in (a) Push-T, the center of mass of the T-block is varied; in (b) Reacher, the joint damping of the two-link arm is varied; in (c) BeerPong, the energy dissipation upon table contact is varied; in (d) FetchSlide, <em>three</em> physics properties vary concurrently: puck mass, surface friction, and aerodynamic drag.
+    </Fragment>
+  </Figure>
+
+<Tabs defaultValue="pusht">
+  <TabsList>
+    <TabsTrigger value="pusht">Push-T</TabsTrigger>
+    <TabsTrigger value="reacher">Reacher</TabsTrigger>
+    <TabsTrigger value="beerpong">BeerPong</TabsTrigger>
+    <TabsTrigger value="fetchslide">FetchSlide</TabsTrigger>
+  </TabsList>
+  <TabsContent value="pusht">
+    The block's center of mass (CoM) is randomly sampled. Different CoMs will not change the block's appearance but will alter how the block rotates and slides when pushed, hence resulting in significantly different state even under the identical push actions.
+  </TabsContent>
+  <TabsContent value="reacher">
+    This environment consists of a two-link robot arm actuated by continuous joint torques. The damping coefficients of the two joints can affect how much the arm moves under the same applied torques.
+  </TabsContent>
+  <TabsContent value="beerpong">
+    In BeerPong, a robot arm throws a ball toward a target cup on a tabletop. The ball needs to bounce off the table at least once to enter the cup due to the long distance. We vary impact energy dissipation by changing the table's contact damping (e.g., higher damping causes greater energy loss, resulting in lower bounce height).
+  </TabsContent>
+  <TabsContent value="fetchslide">
+    Hence, in FetchSlide, we concurrently vary three physics parameters: puck mass, table surface friction, and aerodynamic drag. In this environment, a robot arm strikes a flat puck across a tabletop, where these three properties jointly determine the puck's post-strike deceleration and sliding distance.
+  </TabsContent>
+</Tabs>
+
+## Experimental Results
+
+### Open-Loop Rollout Videos
+
+
+<OpenLoopVideos />
+
+### Visual Planning Videos
+
+
+<PlanningVideos />
